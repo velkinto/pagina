@@ -39,7 +39,7 @@ export NVM_DIR="$HOME/.nvm"
 echo 'server: received code push...'
 cd ${srcDir}
 echo 'server: checkout latest code from git...'
-git --git-dir=${gitDir} --work-tree=${srcDir} checkout master -f
+git --git-dir=${gitDir} --work-tree=${srcDir} checkout main -f
 echo 'server: building pages...'
 pnpm install \
 && npm run build \
