@@ -4,6 +4,7 @@ import { execSync } from 'child_process'
 import fs from 'fs/promises'
 import path from 'path'
 import { homedir } from 'os'
+import { fdatasync } from 'fs'
 
 type Data = {
   name: string
@@ -20,15 +21,18 @@ export default async function handler(
     res.redirect('/')
     // res.status(200).json({ name: 'John Doe' })
     const name = 'demo'
+    const domain = 'xleox.cn'
+    const fullDomain = `${name}.${domain}`
     const baseDir = path.join(homedir(), 'pagina', name)
     const srcDir = path.join(baseDir, 'src')
     const distDir = path.join(srcDir, 'dist')
     const htmlDir = path.join(baseDir, 'html')
     const gitDir = path.join(baseDir, `${name}.git`)
     const hookFile = path.join(gitDir, 'hooks', 'post-receive')
+    const nginxProfile = path.join('/etc/nginx/conf.d', `${fullDomain}.conf`)
     await fs.mkdir(srcDir, { recursive: true })
     execSync(`git init ${name}.git --bare`, { cwd: baseDir })
-    fs.writeFile(
+    await fs.writeFile(
       hookFile,
       `#!/bin/bash
 
@@ -45,10 +49,26 @@ pnpm install \
 && echo 'server: done.'
 mv ${distDir} ${htmlDir}
 
-echo 'git remote add prod ssh://leo@182.61.61.148${gitDir}'
+echo 'git remote add prod ssh://leo@${domain}${gitDir}'
+`
+    )
+    await fs.writeFile(
+      nginxProfile,
+      `server {
+  listen 443 ssl;
+  server_name ${fullDomain};
+
+  root ${htmlDir};
+
+  ssl_certificate ${fullDomain}.crt;
+  ssl_certificate_key ${fullDomain}.key;
+
+  index index.html;
+}
 `
     )
     execSync(`chmod +x ${hookFile}`, { cwd: baseDir })
+    console.log(`git remote add prod ssh://leo@${domain}${gitDir}`)
   } else {
     // Handle any other HTTP method
   }
