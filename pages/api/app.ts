@@ -26,7 +26,7 @@ export default async function handler(
     const htmlDir = path.join(baseDir, 'html')
     const gitDir = path.join(baseDir, `${name}.git`)
     const hookFile = path.join(gitDir, 'hooks', 'post-receive')
-    await fs.mkdir(srcDir)
+    await fs.mkdir(srcDir, { recursive: true })
     execSync(`git init ${name}.git --bare`, { cwd: baseDir })
     fs.writeFile(
       hookFile,
