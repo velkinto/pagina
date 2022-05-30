@@ -5,7 +5,6 @@ specifiers:
   '@types/react': 17.0.38
   autoprefixer: ^10.4.0
   next: latest
-  nginx-conf: ^2.0.0
   postcss: ^8.4.5
   prettier: ^2.6.2
   prettier-plugin-tailwindcss: ^0.1.1
@@ -16,7 +15,6 @@ specifiers:
 
 dependencies:
   next: mirrors.tencent.com/next/12.1.6_sfoxds7t5ydpegc3knd667wn6m
-  nginx-conf: 2.0.0
   react: mirrors.tencent.com/react/17.0.2
   react-dom: mirrors.tencent.com/react-dom/17.0.2_react@17.0.2
 
@@ -219,10 +217,6 @@ packages:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
     dev: true
-
-  /nginx-conf/2.0.0:
-    resolution: {integrity: sha512-fHA8qHPW5FclhUJZUt4MO7E8P6Hg6jHb77I9yAjj18gYtOR4ubxonS1XlUoVMhopFggVSMP79BYc6V3i7H+k4Q==}
-    dev: false
 
   mirrors.tencent.com/acorn-walk/7.2.0:
     resolution: {integrity: sha512-OPdCF6GsMIP+Az+aWfAAOEt2/+iVDKE7oy6lJ098aoe59oAmK76qV6Gw60SbZ8jHuG2wH058GF4pLFbYamYrVA==, registry: https://mirrors.cloud.tencent.com/npm/, tarball: https://mirrors.tencent.com/npm/acorn-walk/-/acorn-walk-7.2.0.tgz}
