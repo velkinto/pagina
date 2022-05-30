@@ -30,8 +30,7 @@ export default async function handler(
     execSync(`git init ${name}.git --bare`, { cwd: baseDir })
     fs.writeFile(
       hookFile,
-      `
-#!/bin/bash
+      `#!/bin/bash
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -47,7 +46,7 @@ pnpm install \
 mv ${distDir} ${htmlDir}
 
 echo 'git remote add prod ssh://leo@182.61.61.148${gitDir}'
-    `
+`
     )
     execSync(`chmod +x ${hookFile}`, { cwd: baseDir })
   } else {
