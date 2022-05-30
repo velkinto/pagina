@@ -4,7 +4,6 @@ import { execSync } from 'child_process'
 import fs from 'fs/promises'
 import path from 'path'
 import { homedir } from 'os'
-import { fdatasync } from 'fs'
 
 type Data = {
   name: string
@@ -20,6 +19,7 @@ export default async function handler(
     /* 1. git仓库和文件目录 2. nginx配置*/
     res.redirect('/')
     // res.status(200).json({ name: 'John Doe' })
+    // 处理报错暂时还没做
     const name = 'demo'
     const domain = 'xleox.cn'
     const fullDomain = `${name}.${domain}`
@@ -60,8 +60,8 @@ echo 'git remote add prod ssh://leo@${domain}${gitDir}'
 
   root ${htmlDir};
 
-  ssl_certificate ${fullDomain}.crt;
-  ssl_certificate_key ${fullDomain}.key;
+  ssl_certificate https/${fullDomain}.crt;
+  ssl_certificate_key https/${fullDomain}.key;
 
   index index.html;
 }
