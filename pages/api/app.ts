@@ -1,17 +1,14 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { execSync } from 'child_process'
 import fs from 'fs/promises'
-import path from 'path'
-import { homedir } from 'os'
+import getDirectories from '../util/directory'
 
-type Data = {
-  name: string
-}
+const DOMAIN = 'xleox.cn'
+const USER = 'leo'
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse
 ) {
   if (req.method === 'POST') {
     // 运行脚本
@@ -21,54 +18,46 @@ export default async function handler(
     // res.status(200).json({ name: 'John Doe' })
     // 处理报错暂时还没做
     const name = 'demo'
-    const domain = 'xleox.cn'
-    const fullDomain = `${name}.${domain}`
-    const baseDir = path.join(homedir(), 'pagina', name)
-    const srcDir = path.join(baseDir, 'src')
-    const distDir = path.join(srcDir, 'dist')
-    const htmlDir = path.join(baseDir, 'html')
-    const gitDir = path.join(baseDir, `${name}.git`)
-    const hookFile = path.join(gitDir, 'hooks', 'post-receive')
-    const nginxProfile = path.join('/etc/nginx/conf.d', `${fullDomain}.conf`)
-    await fs.mkdir(srcDir, { recursive: true })
-    execSync(`git init ${name}.git --bare`, { cwd: baseDir })
+    const dirs = getDirectories(name, DOMAIN)
+    await fs.mkdir(dirs.src, { recursive: true })
+    execSync(`git init ${name}.git --bare`, { cwd: dirs.base })
     await fs.writeFile(
-      hookFile,
+      dirs.hook,
       `#!/bin/bash
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
 echo 'server: received code push...'
-cd ${srcDir}
+cd ${dirs.src}
 echo 'server: checkout latest code from git...'
-git --git-dir=${gitDir} --work-tree=${srcDir} checkout main -f
+git --git-dir=${dirs.git} --work-tree=${dirs.src} checkout main -f
 echo 'server: building pages...'
 pnpm install \
 && npm run build \
 && echo 'server: done.'
-mv ${distDir} ${htmlDir}
+mv ${dirs.dist} ${dirs.html}
 
-echo 'git remote add prod ssh://leo@${domain}${gitDir}'
+echo 'git remote add prod ssh://${USER}@${DOMAIN}${dirs.git}'
 `
     )
     await fs.writeFile(
-      nginxProfile,
+      dirs.nginx,
       `server {
   listen 443 ssl;
-  server_name ${fullDomain};
+  server_name ${dirs.domain};
 
-  root ${htmlDir};
+  root ${dirs.html};
 
-  ssl_certificate https/${fullDomain}.crt;
-  ssl_certificate_key https/${fullDomain}.key;
+  ssl_certificate https/${dirs.domain}.crt;
+  ssl_certificate_key https/${dirs.domain}.key;
 
   index index.html;
 }
 `
     )
-    execSync(`chmod +x ${hookFile}`, { cwd: baseDir })
-    console.log(`git remote add prod ssh://leo@${domain}${gitDir}`)
+    execSync(`chmod +x ${dirs.hook}`, { cwd: dirs.base })
+    console.log(`git remote add prod ssh://${USER}@${DOMAIN}${dirs.git}`)
   } else {
     // Handle any other HTTP method
   }
