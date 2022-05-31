@@ -4,7 +4,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "clean": "rm -rf $home/pagina && rm -rf /etc/nginx/etc/nginx/conf.d/*"
+    "clean": "rm -rf ~/pagina && rm -rf /etc/nginx/etc/nginx/conf.d/*"
   },
   "dependencies": {
     "next": "latest",
